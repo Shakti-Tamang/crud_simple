@@ -107,12 +107,12 @@ export class AppService {
 
   async getByUserName(namePattern:string){
 
-    const result= this.studentRepo.createQueryBuilder('student').leftJoinAndSelect('student.address', 'address')
+    const result= this.studentRepo.createQueryBuilder('student')
+         .leftJoinAndSelect('student.address', 'address')
         .leftJoinAndSelect('student.assignment', 'assignment')
         .loadRelationCountAndMap('student.assignmentCount', 'student.assignment')
-        .where('student.name LIKE :name', { name: `%${namePattern}%` }) 
-        .getMany(); 
-
+        .where('student.name ILIKE :name', { name: `%${namePattern}%` }) // 
+        .getMany();
 
         return result;
 

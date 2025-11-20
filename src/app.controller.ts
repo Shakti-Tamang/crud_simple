@@ -1,6 +1,7 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { AppService } from './app.service';
 import { Student } from './shakti.entity';
+import { ApiQuery } from '@nestjs/swagger';
 
 @Controller("/student")
 export class AppController {
@@ -38,6 +39,14 @@ export class AppController {
   @Patch('/updateStudent/:id')
   async updateALl(@Param('id')id:number,@Body() dto:Student){
     return this.appService.updateUser(id,dto);
+  }
+
+  @Get('/search')
+  @ApiQuery({name:'name',required:false,description:'name must be included'})
+  async getByName(@Query('name') name:string){
+
+    return this.appService.getByUserName(name);
+
   }
 
 }
