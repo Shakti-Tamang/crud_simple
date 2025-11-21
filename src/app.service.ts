@@ -111,6 +111,7 @@ export class AppService {
          .leftJoinAndSelect('student.address', 'address')
         .leftJoinAndSelect('student.assignment', 'assignment')
         .where('student.name ILIKE :name', { name: `%${namePattern}%` }) 
+        .orderBy('student.name', 'ASC')
         .getMany();
 
         return result;
