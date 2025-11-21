@@ -21,4 +21,6 @@ export class AssignmentController{
               return this.appService.getAssignmentOfGivenStduent(id);
     
           }
+
+       
 }

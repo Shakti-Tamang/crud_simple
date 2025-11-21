@@ -105,18 +105,19 @@ export class AppService {
 
   }
 
-  async getByUserName(namePattern:string){
+async getByUserName(namePattern: string) {
+  const queryBuilder = this.studentRepo.createQueryBuilder('student')
+    .leftJoinAndSelect('student.address', 'address')
+    .leftJoinAndSelect('student.assignment', 'assignment')
+    .orderBy('student.name', 'ASC');
 
-    const result= this.studentRepo.createQueryBuilder('student')
-         .leftJoinAndSelect('student.address', 'address')
-        .leftJoinAndSelect('student.assignment', 'assignment')
-        .where('student.name ILIKE :name', { name: `%${namePattern}%` }) 
-        .orderBy('student.name', 'ASC')
-        .getMany();
-
-        return result;
-
+  if (namePattern && namePattern.trim() !== '') {
+    queryBuilder.where('student.name ILIKE :name', { name: `%${namePattern}%` });
   }
+
+  const result = await queryBuilder.getMany();
+  return result;
+}
 
   async getAssignmentByCity(city:string){
 
