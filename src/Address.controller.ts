@@ -21,4 +21,11 @@ export class AddressController{
         return this.appService.getaddressOfGivenStduent(id);
 
     }
+
+       @Get('/assignments/:city')
+          async getAssignmentBycity(@Param('city') city:string){
+
+           return this.appService.getAssignmentByCity(city);
+
+          }
 }
