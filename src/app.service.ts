@@ -109,7 +109,10 @@ async getByUserName(namePattern: string) {
   const queryBuilder = this.studentRepo.createQueryBuilder('student')
     .leftJoinAndSelect('student.address', 'address')
     .leftJoinAndSelect('student.assignment', 'assignment')
-    .orderBy('student.name', 'ASC');
+    .orderBy('student.name', 'ASC')
+    .skip(0).
+    take(3)
+    ;
 
   if (namePattern && namePattern.trim() !== '') {
     queryBuilder.where('student.name ILIKE :name', { name: `%${namePattern}%` });
