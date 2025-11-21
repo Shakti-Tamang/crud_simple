@@ -110,11 +110,22 @@ export class AppService {
     const result= this.studentRepo.createQueryBuilder('student')
          .leftJoinAndSelect('student.address', 'address')
         .leftJoinAndSelect('student.assignment', 'assignment')
-        .loadRelationCountAndMap('student.assignmentCount', 'student.assignment')
-        .where('student.name ILIKE :name', { name: `%${namePattern}%` }) // 
+        .where('student.name ILIKE :name', { name: `%${namePattern}%` }) 
         .getMany();
 
         return result;
+
+  }
+
+  async getAssignmentByCity(city:string){
+
+    const students = await this.studentRepo.createQueryBuilder('student')
+    .leftJoinAndSelect('student.assignment', 'assignment')
+    .leftJoinAndSelect('student.address', 'address')
+    .where('address.city = :city', { city })
+    .getMany();
+  const assignments = students.flatMap(student => student.assignment || []);
+  return assignments;
 
   }
   
