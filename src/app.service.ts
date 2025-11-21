@@ -98,8 +98,10 @@ export class AppService {
       where:{
         student:{
           id:id
-        }
-      },
+        },
+         
+
+      }
     });
     return getaddres;
 
