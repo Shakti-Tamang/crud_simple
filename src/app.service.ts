@@ -111,65 +111,71 @@ export class AppService {
       .skip(0)
       .take(3);
 
-      if(namePattern && namePattern.trim()!==''){
-        queryBuilder.where('student.name ILIKE :name',{name:`%${namePattern}%`})
-      }
+    if (namePattern && namePattern.trim() !== '') {
+      queryBuilder.where('student.name ILIKE :name', {
+        name: `%${namePattern}%`,
+      });
+    }
 
     const result = await queryBuilder.getMany();
     return result;
   }
- 
+
   // query builder
   async getAssignmentByCity(city: string) {
     const students = await this.studentRepo
       .createQueryBuilder('student')
       .leftJoinAndSelect('student.assignment', 'assignment')
       .leftJoinAndSelect('student.address', 'address')
-      .select(['student.id','assignment.id', 'assignment.title'])
-      .where('address.city = :city',{city})
+      .select(['student.id', 'assignment.id', 'assignment.title'])
+      .where('address.city = :city', { city })
       .getMany();
-    const assignments = students.flatMap((stud)=>stud.assignment || []);
+    const assignments = students.flatMap((stud) => stud.assignment || []);
     return assignments;
   }
 
-  async updateAssignment(id:number,dto:Assignment){
+  async updateAssignment(id: number, dto: Assignment) {
+    const assignments = await this.assignmentRepo.findOne({ where: { id } });
 
-    const assignments=await this.assignmentRepo.findOne({where:{id}});
-
-    if(!assignments){
-      throw new NotFoundException("assignment not found");
+    if (!assignments) {
+      throw new NotFoundException('assignment not found');
     }
 
-    const update=this.assignmentRepo.merge(dto,assignments);
+    const update = this.assignmentRepo.merge(dto, assignments);
 
+    const saveupdate = this.assignmentRepo.save(update);
 
-    const saveupdate=this.assignmentRepo.save(update);
-
-    return{
-
-      message:'successfully updated',
-      data:saveupdate
-    }
+    return {
+      message: 'successfully updated',
+      data: saveupdate,
+    };
   }
 
+  async deleteAssignment(id: number) {
+    const assignment = await this.assignmentRepo.findOne({ where: { id } });
 
-    async deleteAssignment(id:number){
-
-    const assignment=await this.assignmentRepo.findOne({where:{id}});
-
-    if(!assignment){
-      throw new NotFoundException("assignment not found");
+    if (!assignment) {
+      throw new NotFoundException('assignment not found');
     }
 
-    const removes=this.assignmentRepo.remove(assignment);
+    const removes = this.assignmentRepo.remove(assignment);
 
+    return {
+      message: 'successfully removed',
+      data: removes,
+    };
+  }
 
+  async findAssignmnetById(id: number) {
+    const assignment = await this.assignmentRepo.findOne({ where: { id } });
 
-
-    return{
-
-      message:'successfully removed',
-      data:removes
+    if (!assignment) {
+      throw new NotFoundException('assignment not found');
     }
+
+    return {
+      message: 'successfully get assignmnet',
+      data: assignment,
+    };
   }
 }
