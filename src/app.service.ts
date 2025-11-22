@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Student } from './shakti.entity';
 import { Repository } from 'typeorm';
@@ -130,5 +130,25 @@ export class AppService {
       .getMany();
     const assignments = students.flatMap((stud)=>stud.assignment || []);
     return assignments;
+  }
+
+  async updateAssignment(id:number,dto:Assignment){
+
+    const assignments=await this.assignmentRepo.findOne({where:{id}});
+
+    if(!assignments){
+      throw new NotFoundException("assignment not found");
+    }
+
+    const update=this.assignmentRepo.merge(dto,assignments);
+
+
+    const saveupdate=this.assignmentRepo.save(update);
+
+    return{
+
+      message:'successfully updated',
+      data:saveupdate
+    }
   }
 }
