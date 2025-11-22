@@ -151,4 +151,25 @@ export class AppService {
       data:saveupdate
     }
   }
+
+
+    async deleteAssignment(id:number){
+
+    const assignment=await this.assignmentRepo.findOne({where:{id}});
+
+    if(!assignment){
+      throw new NotFoundException("assignment not found");
+    }
+
+    const removes=this.assignmentRepo.remove(assignment);
+
+
+
+
+    return{
+
+      message:'successfully removed',
+      data:removes
+    }
+  }
 }
