@@ -30,15 +30,15 @@ export class AppService {
 
   async getAll() {
     return this.studentRepo.find({
-      relations:['address','assignment'],
+      // repo pattern
+      relations: ['address', 'assignment'],
 
-      
-      select:{
-        address:{
-          city:true
+      select: {
+        address: {
+          city: true,
         },
-        assignment:{description:true}
-      }
+        assignment: { description: true },
+      },
     });
   }
 
@@ -64,8 +64,6 @@ export class AppService {
     return this.assignmentRepo.save(saveUser);
   }
 
-
-
   async saveAddress(dto: Address) {
     const student = await this.studentRepo.findOne({
       where: { id: dto.studentId },
@@ -73,79 +71,64 @@ export class AppService {
 
     const saveUser = this.addressRepo.create({
       city: dto.city,
-      street:dto.street,
-      student:student||undefined
+      street: dto.street,
+      student: student || undefined,
     });
 
     return this.addressRepo.save(saveUser);
   }
 
-  async getAssignmentOfGivenStduent(id:number){
-
-    const getAssignments=this.assignmentRepo.find({
-      where:{
-        student:{
-          id:id
-        }
+  async getAssignmentOfGivenStduent(id: number) {
+    const getAssignments = this.assignmentRepo.find({
+      where: {
+        student: {
+          id: id,
+        },
       },
     });
 
     return getAssignments;
-
   }
-    async getaddressOfGivenStduent(id:number){
-
-
-      // repo pattern
-    const getaddres=this.addressRepo.find({
-      where:{
-        student:{
-          id:id
+  async getaddressOfGivenStduent(id: number) {
+    // repo pattern
+    const getaddres = this.addressRepo.find({
+      where: {
+        student: {
+          id: id,
         },
-         
-
-      }
+      },
     });
     return getaddres;
-
   }
 
-async getByUserName(namePattern: string) {
+  async getByUserName(namePattern: string) {
+    // query builder pattern
+    const queryBuilder = this.studentRepo
+      .createQueryBuilder('student')
+      .leftJoinAndSelect('student.address', 'address')
+      .leftJoinAndSelect('student.assignment', 'assignment')
+      .orderBy('student.name', 'ASC')
+      .skip(0)
+      .take(3);
 
-  // query builder pattern
-  const queryBuilder = this.studentRepo.createQueryBuilder('student')
-    .leftJoinAndSelect('student.address', 'address')
-    .leftJoinAndSelect('student.assignment', 'assignment')
-    .orderBy('student.name', 'ASC')
-    .skip(0).
-    take(3)
-    ;
+      if(namePattern && namePattern.trim()!==''){
+        queryBuilder.where('student.name ILIKE :name',{name:`%${namePattern}%`})
+      }
 
-  if (namePattern && namePattern.trim() !== '') {
-    queryBuilder.where('student.name ILIKE :name', { name: `%${namePattern}%` })
-  ;
+    const result = await queryBuilder.getMany();
+    return result;
   }
-
-  const result = await queryBuilder.getMany();
-  return result;
-}
-
-  async getAssignmentByCity(city:string){
-
-    const students = await this.studentRepo.createQueryBuilder('student')
-    .leftJoinAndSelect('student.assignment', 'assignment')
-    .leftJoinAndSelect('student.address', 'address')
-     .select([
-      'student.id',      
-      'assignment.id', 
-      'assignment.title'
-    ])
-    .where('address.city = :city', { city })
-    .getMany();
-  const assignments = students.flatMap(student => student.assignment || []);
-  return assignments;
-
+ 
+  // query builder
+  async getAssignmentByCity(city: string) {
+    const students = await this.studentRepo
+      .createQueryBuilder('student')
+      .leftJoinAndSelect('student.assignment', 'assignment')
+      .leftJoinAndSelect('student.address', 'address')
+      .select(['student.id','assignment.id', 'assignment.title'])
+      .where('address.city = :city',{city})
+      .getMany();
+    const assignments = students.flatMap((stud)=>stud.assignment || []);
+    return assignments;
   }
-  
-
 }
