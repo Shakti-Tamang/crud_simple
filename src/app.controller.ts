@@ -1,7 +1,11 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { AppService } from './app.service';
 import { Student } from './shakti.entity';
 import { ApiQuery } from '@nestjs/swagger';
+import { JwtAuthGuard } from './jwt-auth.guard';
+import { RolesGuard } from './roles.guard';
+import { Role } from './role.enum';
+import { Roles } from './roles.decorator';
 
 @Controller("/student")
 export class AppController {
@@ -14,6 +18,36 @@ export class AppController {
     return this.appService.saveUser(dto);
 
   }
+
+    @Post('register')
+  async register(
+    @Body() registerData:Student
+  ) {
+    return this.appService.register(registerData);
+  }
+
+  @Post('login')
+  async login(@Body() loginData: { email: string; password: string }) {
+    const user = await this.appService.validateUser(
+      loginData.email,
+      loginData.password,
+    );
+    
+    if (!user) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+    
+    return this.appService.login(user);
+  }
+
+
+    @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin)
+  @Get('admin')
+  adminOnly() {
+    return { message: 'Admin access' };
+  }
+
 
   @Get('/alluser')
   async getUsers(){

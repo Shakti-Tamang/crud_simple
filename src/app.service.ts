@@ -1,10 +1,13 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Student } from './shakti.entity';
 import { Repository } from 'typeorm';
 import { Assignment } from './assignment.entity';
 import { Address } from './Address.entity';
-
+import { Role } from './role.enum';
+import { JwtPayload } from './payload.interface';
+import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcryptjs';
 @Injectable()
 export class AppService {
   constructor(
@@ -16,6 +19,7 @@ export class AppService {
 
     @InjectRepository(Address)
     private readonly addressRepo: Repository<Address>,
+      private jwtService: JwtService,
   ) {}
 
   async saveUser(dto: Student) {
@@ -177,5 +181,67 @@ export class AppService {
       message: 'successfully get assignmnet',
       data: assignment,
     };
+  }
+
+
+    async validateUser(email: string, password: string): Promise<Student | null> {
+    const user = await this.studentRepo.findOne({ where: { email } });
+    
+    if (user && await bcrypt.compare(password, user.password)) {
+      return user;
+    }
+    return null;
+  }
+
+async login(user: Student) {
+  const payload: JwtPayload = {
+    sub: user.id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+  };
+
+
+  const token = await Promise.resolve(this.jwtService.sign(payload));
+  
+  return {
+    access_token: token,
+    user: {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    },
+  };
+}
+
+  async register(userData: {
+    name: string;
+    email: string;
+    password: string;
+    role?: Role;
+  }) {
+    const existingUser = await this.studentRepo.findOne({
+      where: { email: userData.email },
+    });
+
+    if (existingUser) {
+      throw new ConflictException('User already exists');
+    }
+
+    const hashedPassword = await bcrypt.hash(userData.password, 12);
+    
+    const user = this.studentRepo.create({
+      ...userData,
+      password: hashedPassword,
+      role: userData.role || Role.User,
+    });
+
+    await this.studentRepo.save(user);
+    return this.login(user);
+  }
+
+  async validateUserById(userId: number): Promise<Student | null> {
+    return this.studentRepo.findOne({ where: { id: userId } });
   }
 }
