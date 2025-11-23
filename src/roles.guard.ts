@@ -1,4 +1,3 @@
-// roles.guard.ts
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Role } from './role.enum';
@@ -6,7 +5,9 @@ import { AuthRequest } from './auth-request.interface';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
-  constructor(private reflector: Reflector) {} // Make sure Reflector is injected
+  constructor(private reflector: Reflector) {
+
+  } 
 
   canActivate(context: ExecutionContext): boolean {
     const requiredRoles = this.reflector.getAllAndOverride<Role[]>('roles', [
