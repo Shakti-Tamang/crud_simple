@@ -24,6 +24,10 @@ export class Student{
 
    password:string
 
+  @ApiProperty({name:'password'})
+  @Column({nullable:true})
+   role:string;
+
     @OneToOne(()=>Address,(address)=>address.student,
   {
     cascade:true,
