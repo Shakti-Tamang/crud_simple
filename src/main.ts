@@ -6,7 +6,7 @@ async function bootstrap() {
 
  const app = await NestFactory.create(AppModule);
 
-  const config=new DocumentBuilder().setTitle("CRUD").setDescription("all apis for CRUD operation").setVersion("V1").build();
+  const config=new DocumentBuilder().setTitle("CRUD").setDescription("all apis for CRUD operation").setVersion("V1"). addBearerAuth() .build();
 
   const document=SwaggerModule.createDocument(app,config);
 
