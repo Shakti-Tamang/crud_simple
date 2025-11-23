@@ -1,11 +1,12 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { AppService } from './app.service';
 import { Student } from './shakti.entity';
-import { ApiQuery } from '@nestjs/swagger';
+import {  ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { RolesGuard } from './roles.guard';
 import { Role } from './role.enum';
 import { Roles } from './roles.decorator';
+import { LogInDto } from './login.dto';
 
 @Controller("/student")
 export class AppController {
@@ -27,7 +28,7 @@ export class AppController {
   }
 
   @Post('login')
-  async login(@Body() loginData: { email: string; password: string }) {
+  async login(@Body() loginData:LogInDto) {
     const user = await this.appService.validateUser(
       loginData.email,
       loginData.password,
@@ -41,9 +42,10 @@ export class AppController {
   }
 
 
+  @ApiBearerAuth()
     @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.Admin)
-  @Get('admin')
+  @Roles(Role.Editor)
+  @Get('getAdmin/admin')
   adminOnly() {
     return { message: 'Admin access' };
   }

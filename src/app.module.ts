@@ -12,6 +12,8 @@ import { AddressController } from './Address.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './constants';
 import { JwtStrategy } from './jwt.strategy';
+import { RolesGuard } from './roles.guard';
+import { JwtAuthGuard } from './jwt-auth.guard';
 
 configDotenv()
 @Module({
@@ -29,12 +31,12 @@ synchronize:true
     PassportModule,
     JwtModule.register({
       secret: jwtConstants.secret,
-      signOptions: { expiresIn: parseInt(jwtConstants.expiresIn) },
+    signOptions: { expiresIn: jwtConstants.expiresIn }, 
     }),
 TypeOrmModule.forFeature([Student,Address,Assignment])
 
   ],
   controllers: [AppController,AssignmentController,AddressController],
-  providers: [AppService,JwtStrategy],
+  providers: [AppService,JwtStrategy,JwtModule,RolesGuard,JwtAuthGuard],
 })
 export class AppModule {}
