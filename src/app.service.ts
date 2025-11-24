@@ -244,4 +244,34 @@ async login(user: Student) {
   async validateUserById(userId: number): Promise<Student | null> {
     return this.studentRepo.findOne({ where: { id: userId } });
   }
+
+  async updateAssggignment(id:number,dto:Assignment){
+
+    const getOneAssignment=await this.assignmentRepo.findOne({where:{id}});
+
+    if(!getOneAssignment){
+    return new NotFoundException("assignment not found")  
+    }
+
+    const updatedAssignment=this.assignmentRepo.merge(getOneAssignment,dto);
+
+
+    return updatedAssignment;
+
+  }
+
+   async updateAddress(id:number,dto:Address){
+
+    const getOneAddress=await this.assignmentRepo.findOne({where:{id}});
+
+    if(!getOneAddress){
+    return new NotFoundException("assignment not found")  
+    }
+
+    const updatedAssignment=this.assignmentRepo.merge(getOneAddress,dto);
+
+
+    return updatedAssignment;
+
+  }
 }
