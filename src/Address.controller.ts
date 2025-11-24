@@ -1,47 +1,41 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from "@nestjs/common";
-import { AppService } from "./app.service";
-import { Address } from "./Address.entity";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
+import { AppService } from './app.service';
+import { Address } from './Address.entity';
 
 @Controller('/address')
-export class AddressController{
-    constructor(private readonly appService: AppService) {
-  
-    }
+export class AddressController {
+  constructor(private readonly appService: AppService) {}
 
-    @Post('/save')
+  @Post('/save')
+  async saveStudentddress(@Body() dto: Address) {
+    return this.appService.saveAddress(dto);
+  }
 
-    async saveStudentddress(@Body()dto:Address){
+  @Get('/getAdress/:id')
+  async getAddress(@Param('id') id: number) {
+    return this.appService.getaddressOfGivenStduent(id);
+  }
 
-        return this.appService.saveAddress(dto);
+  @Get('/assignments/:city')
+  async getAssignmentBycity(@Param('city') city: string) {
+    return this.appService.getAssignmentByCity(city);
+  }
 
-    }
+  @Delete('deleteAssign/:id')
+  async getAssigenmt(@Param('id') id: number) {
+    return this.appService.deleteAddress(id);
+  }
 
-    @Get('/getAdress/:id')
-    async getAddress(@Param('id')id:number){
-        return this.appService.getaddressOfGivenStduent(id);
-
-    }
-
-       @Get('/assignments/:city')
-          async getAssignmentBycity(@Param('city') city:string){
-
-           return this.appService.getAssignmentByCity(city);
-
-          }
-
-          @Delete('deleteAssign/:id')
-
-          async getAssigenmt(@Param('id') id:number){
-
-            return this.appService.deleteAddress(id);
-
-          }
-
-          @Patch('/updateAssignment/:id')
-          async updateAssignmentById(@Body() dto:Address, id:number){
-
-            return this.appService.updateAddress(id,dto);
-
-          }
-
+  @Patch('/updateAssignment/:id')
+  async updateAssignmentById(@Body() dto: Address, id: number) {
+    return this.appService.updateAddress(id, dto);
+  }
 }
