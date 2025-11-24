@@ -1,38 +1,36 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from "@nestjs/common";
-import { AppService } from "./app.service";
-import { Assignment } from "./assignment.entity";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
+import { AppService } from './app.service';
+import { Assignment } from './assignment.entity';
 
 @Controller('/assignment')
-export class AssignmentController{
+export class AssignmentController {
+  constructor(private readonly appService: AppService) {}
 
-      constructor(private readonly appService: AppService) {
-    
-      }
+  @Post('/save')
+  async saveStudentAssignment(@Body() dto: Assignment) {
+    return this.appService.saveAssignment(dto);
+  }
 
-      @Post('/save')
-      async saveStudentAssignment(@Body()dto:Assignment){
+  @Get('/getAssignment/:id')
+  async getAddress(@Param('id') id: number) {
+    return this.appService.getAssignmentOfGivenStduent(id);
+  }
 
-        return this.appService.saveAssignment(dto);
+  @Delete('assignmentUpdate/:id')
+  async DeleteQuery(@Param('id') id: number) {
+    return this.appService.deleteAssignment(id);
+  }
 
-      }
-
-       @Get('/getAssignment/:id')
-          async getAddress(@Param('id')id:number){
-              return this.appService.getAssignmentOfGivenStduent(id);
-    
-          }
-
-          @Delete('assignmentUpdate/:id')
-          async DeleteQuery(@Param('id')id:number){
-
-            return this.appService.deleteAssignment(id);
-
-          }
-
-          @Patch('assignmentDelete/:id')
-          async updateAssognment(@Body() dto:Assignment,@Param('id')id:number){
-            return this.appService.updateAssggignment(id,dto)
-          }
-
-       
+  @Patch('assignmentDelete/:id')
+  async updateAssognment(@Body() dto: Assignment, @Param('id') id: number) {
+    return this.appService.updateAssggignment(id, dto);
+  }
 }
