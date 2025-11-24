@@ -274,4 +274,20 @@ async login(user: Student) {
     return updatedAssignment;
 
   }
+
+
+    async deleteAddress(id: number) {
+    const address = await this.addressRepo.findOne({ where: { id } });
+
+    if (!address) {
+      throw new NotFoundException('address not found');
+    }
+
+    const removes = this.addressRepo.remove(address);
+    return {
+      message: 'successfully removed',
+      data: removes,
+    };
+  }
+  
 }
