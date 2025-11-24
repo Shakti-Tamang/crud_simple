@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post } from "@nestjs/common";
 import { AppService } from "./app.service";
 import { Assignment } from "./assignment.entity";
 
@@ -20,6 +20,18 @@ export class AssignmentController{
           async getAddress(@Param('id')id:number){
               return this.appService.getAssignmentOfGivenStduent(id);
     
+          }
+
+          @Delete('assignmentUpdate/:id')
+          async DeleteQuery(@Param('id')id:number){
+
+            return this.appService.deleteAssignment(id);
+
+          }
+
+          @Patch('assignmentDelete/:id')
+          async updateAssognment(@Body() dto:Assignment,@Param('id')id:number){
+            return this.appService.updateAssggignment(id,dto)
           }
 
        
