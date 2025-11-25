@@ -289,5 +289,13 @@ async login(user: Student) {
       data: removes,
     };
   }
+
+
+  async getAllAssignmnet(){
+    const all = await this.assignmentRepo.find();
+
+    return all;
+    
+  }
   
 }

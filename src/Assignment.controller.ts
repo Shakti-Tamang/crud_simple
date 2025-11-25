@@ -33,4 +33,9 @@ export class AssignmentController {
   async updateAssognment(@Body() dto: Assignment, @Param('id') id: number) {
     return this.appService.updateAssggignment(id, dto);
   }
+
+  @Get('/allssignment')
+  async getAll(){
+    return this.appService.getAllAssignmnet();
+  }
 }
