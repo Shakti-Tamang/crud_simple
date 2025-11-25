@@ -38,4 +38,9 @@ export class AddressController {
   async updateAssignmentById(@Body() dto: Address, id: number) {
     return this.appService.updateAddress(id, dto);
   }
+
+  @Get('/getAllAddress')
+  async getAllAddress(){
+    return this.appService.getAllAddress();
+  }
 }

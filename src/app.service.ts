@@ -295,7 +295,13 @@ async login(user: Student) {
     const all = await this.assignmentRepo.find();
 
     return all;
-    
+
+  }
+
+  async getAllAddress(){
+    const alladdress=await this.addressRepo.find();
+
+    return alladdress;
   }
   
 }
