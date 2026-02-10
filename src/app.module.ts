@@ -16,27 +16,34 @@ import { RolesGuard } from './roles.guard';
 import { JwtAuthGuard } from './jwt-auth.guard';
 
 configDotenv()
+
 @Module({
   imports: [
-TypeOrmModule.forRoot({
-type:'postgres',
-host:process.env.DB_HOST,
-port:Number(process.env.DB_PORT),
-username:process.env.DB_USERNAME,
-password:process.env.DB_PASSWORD,
-database:process.env.DB_NAME,
-entities:[Student,Address,Assignment],
-synchronize:true
-}),
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: process.env.DB_HOST,
+      port: Number(process.env.DB_PORT),
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
+      entities: [Student, Address, Assignment],
+      synchronize: true,
+      // ADD THESE 2 LINES FOR RAILWAY SSL:
+      ssl: true,
+      extra: {
+        ssl: {
+          rejectUnauthorized: false
+        }
+      }
+    }),
     PassportModule,
     JwtModule.register({
       secret: jwtConstants.secret,
-    signOptions: { expiresIn: jwtConstants.expiresIn }, 
+      signOptions: { expiresIn: jwtConstants.expiresIn }, 
     }),
-TypeOrmModule.forFeature([Student,Address,Assignment])
-
+    TypeOrmModule.forFeature([Student, Address, Assignment])
   ],
-  controllers: [AppController,AssignmentController,AddressController],
-  providers: [AppService,JwtStrategy,JwtModule,RolesGuard,JwtAuthGuard],
+  controllers: [AppController, AssignmentController, AddressController],
+  providers: [AppService, JwtStrategy, RolesGuard, JwtAuthGuard],
 })
 export class AppModule {}
