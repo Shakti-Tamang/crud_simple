@@ -4,7 +4,6 @@ import { AppService } from './app.service';
 import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Student } from './shakti.entity';
-import { configDotenv } from 'dotenv';
 import { Address } from './Address.entity';
 import { Assignment } from './assignment.entity';
 import { AssignmentController } from './Assignment.controller';
@@ -14,34 +13,18 @@ import { jwtConstants } from './constants';
 import { JwtStrategy } from './jwt.strategy';
 import { RolesGuard } from './roles.guard';
 import { JwtAuthGuard } from './jwt-auth.guard';
-
-configDotenv()
+import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { dataSourceOptions } from './data-source';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: process.env.DB_HOST,
-      port: Number(process.env.DB_PORT),
-      username: process.env.DB_USERNAME,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
-      entities: [Student, Address, Assignment],
-      synchronize: true,
-      // ADD THESE 2 LINES FOR RAILWAY SSL:
-      ssl: true,
-      extra: {
-        ssl: {
-          rejectUnauthorized: false
-        }
-      }
-    }),
+    TypeOrmModule.forRoot(dataSourceOptions as TypeOrmModuleOptions),
+    TypeOrmModule.forFeature([Student, Address, Assignment]),
     PassportModule,
     JwtModule.register({
       secret: jwtConstants.secret,
       signOptions: { expiresIn: jwtConstants.expiresIn }, 
     }),
-    TypeOrmModule.forFeature([Student, Address, Assignment])
   ],
   controllers: [AppController, AssignmentController, AddressController],
   providers: [AppService, JwtStrategy, RolesGuard, JwtAuthGuard],
