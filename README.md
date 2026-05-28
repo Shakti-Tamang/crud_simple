@@ -44,6 +44,26 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
+## Database migrations
+
+TypeORM migrations are configured to run automatically when the Nest app starts.
+
+```bash
+# create a blank migration file
+$ npm run migration:create -- src/migrations/InitStudents
+
+# generate a migration from entity changes
+$ npm run migration:generate -- src/migrations/AddStudentAddress
+
+# run pending migrations manually
+$ npm run migration:run
+
+# undo the last migration
+$ npm run migration:revert
+```
+
+Use these environment variables: `DB_HOST`, `DB_PORT`, `DB_USERNAME`, `DB_PASSWORD`, and `DB_NAME`.
+
 ## Run tests
 
 ```bash
