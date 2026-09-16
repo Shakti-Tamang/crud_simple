@@ -8,6 +8,15 @@ import { Assignment } from './assignment.entity';
 configDotenv();
 
 export default new DataSource({
+import { configDotenv } from 'dotenv';
+import { DataSource, DataSourceOptions } from 'typeorm';
+import { Address } from './Address.entity';
+import { Assignment } from './assignment.entity';
+import { Student } from './shakti.entity';
+
+configDotenv();
+
+export const dataSourceOptions: DataSourceOptions = {
   type: 'postgres',
   host: process.env.DB_HOST,
   port: Number(process.env.DB_PORT),
@@ -18,3 +27,9 @@ export default new DataSource({
   migrations: ['src/migrations/*{.ts,.js}'],
   synchronize: false,
 });
+  migrations: [__dirname + '/migrations/*{.ts,.js}'],
+  migrationsRun: false,
+  synchronize: false,
+};
+
+export const AppDataSource = new DataSource(dataSourceOptions);

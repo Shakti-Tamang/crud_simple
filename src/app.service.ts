@@ -36,7 +36,6 @@ export class AppService {
     return this.studentRepo.find({
       // repo pattern
       relations: ['address', 'assignment'],
-
       select: {
         address: {
           city: true,
@@ -106,7 +105,7 @@ export class AppService {
   }
 
   async getByUserName(namePattern: string) {
-    // query builder pattern
+    // query builder pattern`````````````
     const queryBuilder = this.studentRepo
       .createQueryBuilder('student')
       .leftJoinAndSelect('student.address', 'address')
@@ -134,8 +133,25 @@ export class AppService {
       .select(['student.id', 'assignment.id', 'assignment.title'])
       .where('address.city = :city', { city })
       .getMany();
-    const assignments = students.flatMap((stud) => stud.assignment || []);
+    const assignments = students.
+    flatMap((stud) => stud.assignment || []);
     return assignments;
+  }
+
+  async getUserWithAssignment(id: number) {
+    const user = await this.studentRepo.findOne({
+      where: { id },
+      relations: ['assignment'],
+    });
+    return user;
+  }
+
+    async getUserWithAssignmentById(id: number) {
+    const user = await this.studentRepo.createQueryBuilder('student')
+      .leftJoinAndSelect('student.assignment', 'assignment')
+      .where('student.id = :id', { id })
+      .getOne();
+    return user;
   }
 
   async updateAssignment(id: number, dto: Assignment) {

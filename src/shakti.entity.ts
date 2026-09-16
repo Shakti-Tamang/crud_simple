@@ -13,35 +13,43 @@ import { Role } from './role.enum';
 @Entity()
 export class Student {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @ApiProperty({ name: 'name', example: 'Shakti Tamang' })
   @Column()
-  name: string;
+  name!: string;
 
   @ApiProperty({ name: 'email' })
   @Column({ nullable: true })
-  email: string;
+  email!: string;
 
   @ApiProperty({ name: 'password' })
   @Column({ nullable: true })
-  password: string;
+  password!: string;
+
+    @ApiProperty({ name: '  nickname' })
+  @Column({ nullable: true })
+  usernickname!: string;
 
   @ApiProperty({ name: 'role' })
   @Column({ type: 'enum', enum: Role, default: Role.User })
-  role: Role;
+  role!: Role;
+
+  @ApiProperty({ name: 'caste', required: false })
+  @Column({ nullable: true })
+  caste!: string;
 
   @OneToOne(() => Address, (address) => address.student, {
     cascade: true,
     nullable: true,
     onDelete: 'CASCADE',
   })
-  address: Address;
+  address!: Address;
 
   @OneToMany(() => Assignment, (assignment) => assignment.student, {
     cascade: true,
     nullable: true,
     onDelete: 'CASCADE',
   })
-  assignment: Assignment[];
+  assignment!: Assignment[];
 }
