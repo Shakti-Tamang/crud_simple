@@ -104,26 +104,46 @@ export class AppService {
     return getaddres;
   }
 
-  async getByUserName(namePattern: string) {
-    // query builder pattern`````````````
-    const queryBuilder = this.studentRepo
-      .createQueryBuilder('student')
-      .leftJoinAndSelect('student.address', 'address')
-      .leftJoinAndSelect('student.assignment', 'assignment')
-      .orderBy('student.name', 'ASC')
-      .skip(0)
-      .take(3);
 
-    if (namePattern && namePattern.trim() !== '') {
-      queryBuilder.where('student.name ILIKE :name', {
-        name: `%${namePattern}%`,
-      });
-    }
+async getByUserName(
+  namePattern?: string,
+  addressPattern?: string,
+  page = 1,
+  size = 10,
+) {
 
-    const result = await queryBuilder.getMany();
-    return result;
+
+  const offset = (page - 1) * size;
+
+  const queryBuilder = this.studentRepo
+    .createQueryBuilder('student')
+    .leftJoinAndSelect('student.address', 'address')
+    .leftJoinAndSelect('student.assignment', 'assignment')
+    .orderBy('student.name', 'ASC');
+
+  if (namePattern?.trim()!=='') {
+    queryBuilder.andWhere('student.name ILIKE :name', {
+      name: `%${namePattern}%`,
+    });
   }
 
+  if (addressPattern?.trim()) {
+    queryBuilder.andWhere(
+      '(address.city ILIKE :address OR address.street ILIKE :address)',
+      { address: `%${addressPattern.trim()}%` },
+    );
+  }
+
+  const [data, total] = await queryBuilder .skip(offset) .take(size).getManyAndCount();
+
+  return {
+    data,
+    total,
+    page,
+    size,
+    totalPages: Math.ceil(total / size),
+  };
+}
   // query builder
   async getAssignmentByCity(city: string) {
     const students = await this.studentRepo

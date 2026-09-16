@@ -41,7 +41,6 @@ export class Student {
 
   @OneToOne(() => Address, (address) => address.student, {
     cascade: true,
-    nullable: true,
     onDelete: 'CASCADE',
   })
   address!: Address;
