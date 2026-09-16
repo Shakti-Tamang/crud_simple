@@ -26,13 +26,9 @@ username:process.env.DB_USERNAME,
 password:process.env.DB_PASSWORD,
 database:process.env.DB_NAME,
 entities:[Student,Address,Assignment],
-synchronize:true
+  synchronize:false,
+  migrations: ['dist/migrations/*{.js,.ts}']
 }),
-    PassportModule,
-    JwtModule.register({
-      secret: jwtConstants.secret,
-    signOptions: { expiresIn: jwtConstants.expiresIn }, 
-    }),
 TypeOrmModule.forFeature([Student,Address,Assignment])
 
   ],

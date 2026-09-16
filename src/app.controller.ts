@@ -94,9 +94,38 @@ export class AppController {
   @ApiQuery({
     name: 'name',
     required: false,
-    description: 'name must be included',
+    description: 'Search users by name',
   })
-  async getByName(@Query('name') name: string) {
-    return this.appService.getByUserName(name);
-  }
+  @ApiQuery({
+    name: 'address',
+    required: false,
+    description: 'Search users by city or street',
+  })
+  @ApiQuery({
+    name: 'offset',
+    required: false,
+    type: Number,
+    description: 'Number of matching users to skip',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    type: Number,
+    description: 'Maximum number of matching users to return',
+  })
+
+@Get('/search')
+async getByName(
+  @Query('name') name?: string,
+  @Query('address') address?: string,
+  @Query('page') page = '1',
+  @Query('size') size = '10',
+) {
+  return this.appService.getByUserName(
+    name,
+    address,
+    Number(page),
+    Number(size),
+  );
+}
 }
