@@ -1,0 +1,97 @@
+Haversine Distance Calculation
+==============================
+
+1. Purpose
+-----------
+
+The Haversine formula calculates the great-circle distance between two points
+on Earth using their latitude and longitude coordinates. It can be used to
+find the geographical distance between a user and a student, address, or other
+location.
+
+Note: The current NestJS implementation does not yet contain latitude and
+longitude fields or Haversine logic. This document describes the algorithm
+intended for use.
+
+2. Formula
+----------
+
+For two locations:
+
+- Point 1: (lat1, lon1)
+- Point 2: (lat2, lon2)
+- Earth radius: R = 6371 kilometers
+
+Delta latitude = lat2 - lat1
+Delta longitude = lon2 - lon1
+
+A = sin^2(Delta latitude / 2)
+    + cos(lat1) * cos(lat2) * sin^2(Delta longitude / 2)
+
+C = 2 * atan2(sqrt(A), sqrt(1 - A))
+
+Distance = R * C
+
+Latitude and longitude must be converted from degrees to radians before the
+formula is applied.
+
+3. Pseudocode
+-------------
+
+function haversineDistance(lat1, lon1, lat2, lon2):
+    earthRadiusKm = 6371
+
+    lat1Radians = toRadians(lat1)
+    lat2Radians = toRadians(lat2)
+
+    deltaLat = toRadians(lat2 - lat1)
+    deltaLon = toRadians(lon2 - lon1)
+
+    A = sin^2(deltaLat / 2)
+        + cos(lat1Radians)
+        * cos(lat2Radians)
+        * sin^2(deltaLon / 2)
+
+    C = 2 * atan2(sqrt(A), sqrt(1 - A))
+
+    return earthRadiusKm * C
+
+4. Usage Example
+----------------
+
+distanceKm = haversineDistance(
+    user.latitude,
+    user.longitude,
+    address.latitude,
+    address.longitude
+)
+
+if distanceKm <= radiusKm:
+    location is within the requested radius
+
+5. Complexity Analysis
+----------------------
+
+- Time complexity: O(1) for each distance calculation.
+- Space complexity: O(1) auxiliary space.
+- For N locations, calculating the distance for every location requires O(N)
+  time.
+
+6. NestJS Integration Notes
+---------------------------
+
+To use this algorithm in the NestJS application:
+
+1. Add latitude and longitude columns to the relevant entity, such as Address.
+2. Store coordinates in decimal format.
+3. Validate that latitude is between -90 and 90 degrees.
+4. Validate that longitude is between -180 and 180 degrees.
+5. Calculate the Haversine distance in the service layer.
+6. Use the calculated distance to filter locations by a requested radius.
+
+Example request concept:
+
+GET /student/search?latitude=27.7172&longitude=85.3240&radiusKm=10
+
+The endpoint can return only locations whose calculated distance is less than
+or equal to the requested radius.
